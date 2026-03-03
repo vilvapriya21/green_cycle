@@ -22,11 +22,7 @@ Thumbs.db
 *.log
 
 # Environment variables
-<<<<<<< HEAD
 .env.example
-=======
-.env
->>>>>>> a618e3d783b82a39a7cbbf353dd93da506fb81aa
 
 # Model artifacts (optional - depends on you)
 *.pkl
