@@ -1,0 +1,33 @@
+# Virtual Environment
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+<<<<<<< HEAD
+.env.example
+=======
+.env
+>>>>>>> a618e3d783b82a39a7cbbf353dd93da506fb81aa
+
+# Model artifacts (optional - depends on you)
+*.pkl
+models/
