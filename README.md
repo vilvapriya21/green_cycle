@@ -42,15 +42,21 @@ We implemented a **Logistic Regression classifier** using Scikit-learn.
 
 ## Dataset
 
-The dataset contains 100+ synthetic and manually curated examples.
+## Dataset
+
+The dataset contains 301 synthetic and manually curated examples.
 
 Class distribution:
-- Recyclable ~ 40%
-- Compost ~ 30%
-- Hazardous ~ 30%
+- Recyclable: 101
+- Compost: 100
+- Hazardous: 100
 
-Synthetic samples were generated to ensure vocabulary diversity 
-and class balance for training stability.
+To improve real-world robustness and reduce prediction uncertainty,
+the dataset was expanded with diverse sentence-level variations,
+context phrases, and modifier combinations.
+
+This increased vocabulary diversity and improved generalisation
+across natural-language inputs.
 
 ---
 
@@ -75,57 +81,47 @@ This ensures semantic consistency (e.g., “batteries” → “battery”).
 
 ## Training & Evaluation
 
-* Dataset size: 100+ examples
-* Balanced across 3 classes
-* Train/Test Split: 80/20
-* Cross-validation used to validate stability
+- Dataset size: 301 samples
+- Balanced across 3 classes
+- Train/Test Split: 80/20
+- Cross-validation (5-fold) used to validate stability
 
 ### Results
 
-* Training Accuracy: 0.9688
-* Test Accuracy: 0.7917
-* Cross Validation Score: 0.7667
+- Training Accuracy: 94.17%
+- Test Accuracy: 83.61%
+- Cross-Validation Mean Accuracy: 85.37%
+- Cross-Validation Std: 0.0554
 
-### Overfitting Check
+## Overfitting Analysis
 
-Overfitting was evaluated by comparing:
+Training Accuracy: 94.17%  
+Test Accuracy: 83.61%  
+Generalisation Gap: ~10.5%
 
-* Training vs Test accuracy
-* Cross-validation mean score
+The gap between training and test accuracy is moderate and acceptable
+for a TF-IDF based text classification model.
 
-Training Accuracy: 96.88%  
-Test Accuracy: 79.17%  
-Cross-Validation Mean Accuracy: 76.67%
+Compared to the earlier smaller dataset (~100 samples), the expanded dataset:
 
-There is a moderate gap between training and test accuracy (~17%).
+- Reduced overfitting
+- Increased cross-validation stability
+- Improved macro F1 score
+- Reduced prediction uncertainty on sentence-style inputs
 
-This suggests mild overfitting, which is expected given:
-
-- The relatively small dataset (~100 samples)
-- Sparse TF-IDF features
-- Limited domain vocabulary
-
-However, cross-validation scores are consistent (0.70–0.79), 
-indicating that the model generalises reasonably well 
-and does not collapse on unseen data.
-
-To mitigate overfitting:
-- Regularised Logistic Regression was used
-- Balanced dataset across classes
-- Cross-validation was performed
-
-Given the small dataset size, the model performance is considered acceptable and stable.
+The model demonstrates strong generalisation with consistent
+cross-validation performance (0.78 – 0.93 across folds).
 
 ### Classification Report (Test Set)
 
 | Class       | Precision | Recall | F1-score |
 |------------|-----------|--------|----------|
-| Compost     | 0.62      | 1.00   | 0.76     |
-| Hazardous   | 1.00      | 0.62   | 0.77     |
-| Recyclable  | 1.00      | 0.75   | 0.86     |
+| Compost     | 0.72      | 0.90   | 0.80     |
+| Hazardous   | 0.93      | 0.70   | 0.80     |
+| Recyclable  | 0.90      | 0.90   | 0.90     |
 
-Overall Accuracy: 79.17%
-Macro Avg F1: 0.80
+Overall Accuracy: 83.61%  
+Macro Avg F1: 0.83
 
 ---
 

@@ -1,45 +1,79 @@
+"""
+preprocessor.py
+---------------
+Text preprocessing module for the Green-Cycle waste classifier.
+
+Handles all NLP cleaning steps:
+    - Lowercasing
+    - Non-alphabetical character removal
+    - Lemmatisation via spaCy
+    - Stopword removal
+    - Short/meaningless token removal
+
+This same function is used at both training time and inference time
+to guarantee consistent feature representation.
+"""
+
 import re
+
 import spacy
 
-# Load spaCy English model once at module level for efficiency
+# Load spaCy model once at module level — avoids reloading on every call.
+# Run `python -m spacy download en_core_web_sm` before using this module.
 nlp = spacy.load("en_core_web_sm")
 
 
 def clean_text(text: str) -> str:
     """
-    Perform NLP preprocessing on input text.
+    Clean and normalise raw text for ML feature extraction.
 
-    Steps:
-    - Convert to lowercase
-    - Remove non-alphabetical characters
-    - Lemmatize tokens
-    - Remove stopwords and punctuation
-    - Remove short or meaningless tokens
+    Pipeline:
+        1. Validate input.
+        2. Lowercase entire string.
+        3. Strip non-alphabetical characters (keeps spaces).
+        4. Run spaCy NLP pipeline for lemmatisation + stopword detection.
+        5. Filter out stopwords, punctuation, pronouns, and short tokens.
+        6. Return cleaned, space-joined token string.
 
-    This function is used for both training and inference
-    to ensure consistent text processing.
+    Args:
+        text (str): Raw waste item description, e.g. "Empty Plastic Bottle!".
+
+    Returns:
+        str: Cleaned lemmatised string, e.g. "empty plastic bottle".
+             Returns empty string if input is invalid.
+
+    Example:
+        >>> clean_text("Used AA Batteries!!!")
+        'use battery'
+        >>> clean_text("Empty plastic water bottle")
+        'empty plastic water bottle'
     """
 
+    # --- Guard: reject non-string or empty input ---
     if not text or not isinstance(text, str):
         return ""
 
-    # Normalize case
+    # Step 1: Normalise case
     text = text.lower()
 
-    # Remove non-alphabetical characters (retain spaces)
+    # Step 2: Remove anything that is not a letter or space
     text = re.sub(r"[^a-zA-Z\s]", "", text)
 
-    # Process text using spaCy pipeline
+    # Step 3: Collapse multiple spaces into one
+    text = re.sub(r"\s+", " ", text).strip()
+
+    # Step 4: Pass through spaCy for lemmatisation and linguistic analysis
     doc = nlp(text)
 
+    # Step 5: Filter tokens
     tokens = [
-        token.lemma_
+        token.lemma_                        # use base lemma form
         for token in doc
-        if not token.is_stop              # remove stopwords
-        and not token.is_punct            # remove punctuation
-        and token.lemma_.strip() != ""    # remove empty tokens
-        and token.lemma_ != "-PRON-"      # remove unresolved pronoun lemma
-        and len(token.lemma_) > 2         # remove very short tokens
+        if not token.is_stop               # drop stopwords (e.g. "the", "is")
+        and not token.is_punct             # drop punctuation tokens
+        and token.lemma_.strip() != ""     # drop whitespace-only tokens
+        and token.lemma_ != "-PRON-"       # drop unresolved pronoun lemmas
+        and len(token.lemma_) > 2          # drop very short noise tokens
     ]
 
     return " ".join(tokens)

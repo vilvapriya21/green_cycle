@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Models
     MODEL_DIR: Path = BASE_DIR / "models"
-    MODEL_PATH: Path = MODEL_DIR / "classifier.joblib"
+    MODEL_PATH: Path = MODEL_DIR / "pipeline.joblib"
 
     # LLM Configuration (Groq only)
     LLM_MODEL: str = "llama3-8b-8192"

@@ -1,121 +1,302 @@
 text,label
-clean detergent bottle,Recyclable
-leftover rice,Compost
-partially used glue thinner can,Hazardous
-flattened magazine bundle,Recyclable
-partially used motor oil container,Hazardous
-acid cleaning bottle,Hazardous
-crushed office printer paper,Recyclable
-vegetable scraps,Compost
-CFL bulb,Hazardous
-broken nail polish remover bottle,Hazardous
-wilted vegetable scraps,Compost
-plastic water bottle,Recyclable
-car battery,Hazardous
-rotten watermelon rind,Compost
-banana peel,Compost
-empty aluminum soda can,Recyclable
-flattened glass jar,Recyclable
-leaking paint thinner can,Hazardous
-detergent bottle,Recyclable
-fruit pulp,Compost
-broken used batteries,Hazardous
-crushed milk carton,Recyclable
-spinach leaves,Compost
-shampoo bottle,Recyclable
-paper envelope,Recyclable
-mercury thermometer,Hazardous
-leaking insecticide spray,Hazardous
-expired fluorescent light tube,Hazardous
-aerosol spray can,Hazardous
-wilted coffee grounds,Compost
-stale leftover rice,Compost
-printer ink cartridge,Hazardous
-nail polish remover bottle,Hazardous
-egg shells,Compost
-empty paper envelope,Recyclable
-clean shampoo bottle,Recyclable
-partially used bleach bottle,Hazardous
-leaking pesticide container,Hazardous
-grass clippings,Compost
-rotten spinach leaves,Compost
-metal food can,Recyclable
-watermelon rind,Compost
-leftover fruit pulp,Compost
-bread slices,Compost
-empty juice carton,Recyclable
-crushed cereal box carton,Recyclable
-damaged medicine tablets,Hazardous
-overripe egg shells,Compost
-broken acid cleaning bottle,Hazardous
-used batteries,Hazardous
-clean plastic food container,Recyclable
-leaking aerosol spray can,Hazardous
-leftover banana peel,Compost
-paint thinner can,Hazardous
-glass jar,Recyclable
-cucumber peels,Compost
-bleach bottle,Hazardous
-damaged lithium battery pack,Hazardous
-empty steel tin can,Recyclable
-insecticide spray,Hazardous
-milk carton,Recyclable
-onion skins,Compost
-stale garden leaves,Compost
-plastic takeaway container,Recyclable
-aluminum soda can,Recyclable
-plastic packaging wrap,Recyclable
-orange peel,Compost
-clean cardboard shipping box,Recyclable
-overripe orange peel,Compost
-empty metal food can,Recyclable
-medical syringes,Hazardous
-leaking medical syringes,Hazardous
-motor oil container,Hazardous
-lithium battery pack,Hazardous
-overripe potato peels,Compost
-tea leaves,Compost
-coffee grounds,Compost
-expired car battery,Hazardous
-old mercury thermometer,Hazardous
-lettuce leaves,Compost
-wilted apple core,Compost
-wilted grass clippings,Compost
-apple core,Compost
-avocado skin,Compost
-leftover lettuce leaves,Compost
-crushed plastic yogurt cup,Recyclable
-gasoline container,Hazardous
-rinsed newspaper stack,Recyclable
-spoiled onion skins,Compost
-fluorescent light tube,Hazardous
-leftover tomato scraps,Compost
-steel tin can,Recyclable
-damaged gasoline container,Hazardous
-chemical solvent bottle,Hazardous
-overripe cucumber peels,Compost
-newspaper stack,Recyclable
-broken chemical solvent bottle,Hazardous
-plastic yogurt cup,Recyclable
-cardboard shipping box,Recyclable
-plastic food container,Recyclable
-empty plastic packaging wrap,Recyclable
-garden leaves,Compost
+empty plastic water bottle,Recyclable
+plastic milk jug,Recyclable
+cardboard box,Recyclable
+newspaper,Recyclable
 glass beer bottle,Recyclable
-clean plastic water bottle,Recyclable
-juice carton,Recyclable
-stale avocado skin,Compost
-empty glass beer bottle,Recyclable
+aluminum soda can,Recyclable
+steel food can,Recyclable
+plastic detergent bottle,Recyclable
+clear plastic packaging,Recyclable
+glass wine bottle,Recyclable
+cardboard cereal box,Recyclable
+plastic shampoo bottle,Recyclable
+glass jam jar,Recyclable
+aluminum foil,Recyclable
+plastic yogurt container,Recyclable
+paper grocery bag,Recyclable
+tin can,Recyclable
+plastic juice bottle,Recyclable
+glass pickle jar,Recyclable
+cardboard toilet roll,Recyclable
+plastic food container,Recyclable
+magazines and catalogues,Recyclable
+paper envelopes,Recyclable
+plastic laundry bottle,Recyclable
+glass sauce bottle,Recyclable
+metal bottle cap,Recyclable
+plastic vitamin bottle,Recyclable
+cardboard egg carton,Recyclable
+office paper,Recyclable
+plastic wrap roll,Recyclable
+glass olive jar,Recyclable
+aluminum beverage can,Recyclable
+plastic salad container,Recyclable
+paper towel roll cardboard,Recyclable
+metal soup can,Recyclable
+clear glass bottle,Recyclable
+plastic water gallon jug,Recyclable
+brown paper bag,Recyclable
+cardboard shipping box,Recyclable
+plastic conditioner bottle,Recyclable
+glass ketchup bottle,Recyclable
+plastic straw,Recyclable
+plastic cup lid,Recyclable
+glass perfume bottle,Recyclable
+paper coffee cup sleeve,Recyclable
+cardboard pizza box clean,Recyclable
+plastic storage bin,Recyclable
+metal wire hanger,Recyclable
+glass vase,Recyclable
+aluminum pie tin,Recyclable
+rinsed plastic tub,Recyclable
+empty glass mustard jar,Recyclable
+clean tin foil sheet,Recyclable
+paper notebook,Recyclable
+plastic bleach bottle,Recyclable
+cardboard oatmeal container,Recyclable
+glass salsa jar,Recyclable
+plastic peanut butter jar,Recyclable
+aluminum cat food can,Recyclable
+clean plastic bag,Recyclable
+paper mailer envelope,Recyclable
+empty glass olive oil bottle,Recyclable
+metal sardine can,Recyclable
+plastic protein powder tub,Recyclable
+cardboard tissue box,Recyclable
+glass spice jar,Recyclable
+plastic medicine bottle,Recyclable
+aluminum coffee pod,Recyclable
+cardboard cracker box,Recyclable
+glass juice bottle,Recyclable
+plastic tupperware lid,Recyclable
+empty paper coffee bag,Recyclable
+metal paint bucket clean,Recyclable
+plastic lotion bottle,Recyclable
+cardboard pasta box,Recyclable
+glass water bottle,Recyclable
+plastic ice cream container,Recyclable
+newspaper stack,Recyclable
+empty aluminum spray can,Recyclable
+cardboard juice box,Recyclable
+plastic hummus container,Recyclable
+glass mineral water bottle,Recyclable
+metal cookie tin,Recyclable
+plastic zip lock bag clean,Recyclable
+cardboard book mailer,Recyclable
+glass drinking bottle,Recyclable
+plastic dish soap bottle,Recyclable
+cardboard cracker sleeve,Recyclable
+empty glass honey jar,Recyclable
+metal tuna can,Recyclable
+plastic takeout container,Recyclable
+aluminum gum wrapper,Recyclable
+cardboard shoe box,Recyclable
+glass baby food jar,Recyclable
+plastic wrap box cardboard,Recyclable
+steel bottle cap,Recyclable
+plastic cream cheese container,Recyclable
+cardboard paper roll core,Recyclable
+glass cooking wine bottle,Recyclable
+empty plastic salsa container,Recyclable
+plastic snack bag clean,Recyclable
+banana peel,Compost
+apple core,Compost
+coffee grounds,Compost
+vegetable scraps,Compost
+grass clippings,Compost
+fallen leaves,Compost
+eggshells,Compost
+fruit rinds,Compost
+tea bags,Compost
+bread crusts,Compost
+orange peel,Compost
+wilted flowers,Compost
+garden weeds,Compost
+corn cobs,Compost
+watermelon rind,Compost
+cooked rice scraps,Compost
+lettuce leaves,Compost
+onion skins,Compost
+carrot tops,Compost
+melon scraps,Compost
+strawberry tops,Compost
 potato peels,Compost
-glue thinner can,Hazardous
-wilted bread slices,Compost
-spoiled tea leaves,Compost
-magazine bundle,Recyclable
-medicine tablets,Hazardous
-cereal box carton,Recyclable
-broken CFL bulb,Hazardous
-office printer paper,Recyclable
-leaking printer ink cartridge,Hazardous
+cucumber peel,Compost
+used paper napkins,Compost
+dead houseplants,Compost
+stale bread,Compost
+avocado pits,Compost
+mango seed,Compost
+pineapple skin,Compost
+hair and nail clippings,Compost
+raw pasta scraps,Compost
+expired herbs,Compost
+nut shells,Compost
+fruit pulp from juicing,Compost
+coffee filter paper,Compost
+wooden chopsticks,Compost
+dried out flowers,Compost
+vegetable peels,Compost
+apple seeds,Compost
+lemon peel,Compost
+grapefruit rind,Compost
+pear core,Compost
+celery stalks,Compost
+broccoli stems,Compost
+spent grain from brewing,Compost
+crushed eggshells,Compost
+dried leaves mulch,Compost
+rotten vegetables,Compost
+expired flour,Compost
+old cooking oil absorbed in paper,Compost
+shredded paper for compost,Compost
+wood shavings,Compost
+spoiled fruit,Compost
+used paper towel,Compost
+kiwi skin,Compost
+cherry pits,Compost
+peach pit,Compost
+plum seed,Compost
+grape stems,Compost
+melon seeds,Compost
+rotten apple,Compost
 tomato scraps,Compost
-used plastic takeaway container,Recyclable
-pesticide container,Hazardous
+pepper seeds,Compost
+spinach leaves wilted,Compost
+cabbage outer leaves,Compost
+beetroot tops,Compost
+asparagus ends,Compost
+mushroom stems,Compost
+zucchini ends,Compost
+herb stems dried,Compost
+straw and hay scraps,Compost
+dead plant soil mix,Compost
+overripe banana,Compost
+moldy bread,Compost
+fish bones cooked,Compost
+chicken bones cooked,Compost
+cooked vegetable leftovers,Compost
+expired dry beans,Compost
+cardboard egg carton wet,Compost
+rice husks,Compost
+sunflower seed shells,Compost
+pumpkin seeds,Compost
+corn husks,Compost
+coconut shell,Compost
+watermelon seeds,Compost
+used matches wooden,Compost
+toothpicks wooden,Compost
+paper bags wet soiled,Compost
+bamboo skewer,Compost
+oatmeal leftovers,Compost
+expired oats,Compost
+potato sprouts,Compost
+garlic skins,Compost
+leek tops,Compost
+fennel fronds,Compost
+radish tops,Compost
+turnip peels,Compost
+parsnip peels,Compost
+used tea leaves,Compost
+loose leaf tea waste,Compost
+used batteries,Hazardous
+broken fluorescent light tube,Hazardous
+old paint can,Hazardous
+paint thinner can,Hazardous
+motor oil container,Hazardous
+pesticide bottle,Hazardous
+household bleach container,Hazardous
+mercury thermometer,Hazardous
+car battery,Hazardous
+antifreeze container,Hazardous
+nail polish remover bottle,Hazardous
+weed killer bottle,Hazardous
+rat poison container,Hazardous
+old medications,Hazardous
+expired prescription drugs,Hazardous
+pool chlorine tablets,Hazardous
+solvent container,Hazardous
+brake fluid bottle,Hazardous
+old fire extinguisher,Hazardous
+spray paint can,Hazardous
+aerosol insecticide,Hazardous
+electronic waste circuit board,Hazardous
+broken CRT monitor,Hazardous
+old laptop battery,Hazardous
+mobile phone battery,Hazardous
+smoke detector,Hazardous
+leaking acid battery,Hazardous
+chemical cleaning agent,Hazardous
+oven cleaner spray,Hazardous
+drain unclogging chemical,Hazardous
+asbestos ceiling tile,Hazardous
+fuel canister,Hazardous
+old propane tank,Hazardous
+lighter fluid bottle,Hazardous
+hospital sharps container,Hazardous
+used hypodermic needle,Hazardous
+glue solvent tube,Hazardous
+typewriter correction fluid,Hazardous
+old ink cartridge,Hazardous
+insect repellent spray,Hazardous
+contaminated rags with oil,Hazardous
+broken thermometer with mercury,Hazardous
+old CFL bulb,Hazardous
+car engine oil,Hazardous
+varnish can,Hazardous
+wood stain can,Hazardous
+lithium battery pack,Hazardous
+sodium hydroxide drain cleaner,Hazardous
+chlorine bleach bottle,Hazardous
+ammonia cleaning solution,Hazardous
+photographic developer chemicals,Hazardous
+darkroom fixer chemical,Hazardous
+pool shock chemical,Hazardous
+flea treatment chemical,Hazardous
+roach killer spray,Hazardous
+mothball container,Hazardous
+old thermometer,Hazardous
+neon light tube,Hazardous
+broken LED strip with circuit,Hazardous
+dead lithium coin cell battery,Hazardous
+old watch battery,Hazardous
+hearing aid battery,Hazardous
+laptop screen with mercury,Hazardous
+CRT television,Hazardous
+old desktop computer tower,Hazardous
+printer toner cartridge,Hazardous
+used engine coolant,Hazardous
+transmission fluid bottle,Hazardous
+power steering fluid,Hazardous
+old generator fuel,Hazardous
+leaking car oil,Hazardous
+contaminated fuel drum,Hazardous
+industrial degreaser,Hazardous
+chemical rust remover,Hazardous
+paint stripper container,Hazardous
+turpentine bottle,Hazardous
+lacquer thinner,Hazardous
+fiberglass resin kit,Hazardous
+epoxy hardener tube,Hazardous
+old roofing tar,Hazardous
+asphalt sealant container,Hazardous
+used oil filter,Hazardous
+car air bag inflator,Hazardous
+old smoke alarm,Hazardous
+radioactive material container,Hazardous
+radon testing kit chemicals,Hazardous
+old lead paint chips,Hazardous
+x-ray film chemicals,Hazardous
+laboratory acid bottle,Hazardous
+sodium azide container,Hazardous
+hydrogen peroxide industrial,Hazardous
+nitric acid bottle,Hazardous
+sulfuric acid container,Hazardous
+formaldehyde solution,Hazardous
+chloroform bottle,Hazardous
+ethylene glycol antifreeze,Hazardous
+old aerosol deodorant,Hazardous
+pressurized gas cylinder,Hazardous
+butane lighter canister,Hazardous
+old car airbag module,Hazardous
