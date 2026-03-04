@@ -1,82 +1,73 @@
 import requests
+import logging
+from requests.exceptions import Timeout, RequestException
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class LLMClient:
     """
-    Handles communication with external LLM providers.
-    Supports OpenAI, Groq, and Ollama via configurable base URL.
+    Handles communication with Groq LLM.
     """
 
     def __init__(self):
-        self.provider = settings.LLM_PROVIDER.lower()
         self.api_key = settings.LLM_API_KEY
-        self.base_url = settings.LLM_BASE_URL
+        self.model = settings.LLM_MODEL
+        self.base_url = "https://api.groq.com/openai/v1/chat/completions"
+        self.timeout = 15
 
     def generate(self, prompt: str) -> str | None:
         """
-        Sends prompt to configured LLM provider.
+        Sends prompt to Groq.
         Returns generated text or None if failure occurs.
         """
 
-        if self.provider in ["openai", "groq"]:
-            return self._call_openai_compatible(prompt)
-
-        elif self.provider == "ollama":
-            return self._call_ollama(prompt)
-
-        return None
-
-    def _call_openai_compatible(self, prompt: str) -> str | None:
-        """
-        OpenAI and Groq both support OpenAI-compatible API format.
-        """
-
-        if not self.api_key or not self.base_url:
+        if not self.api_key:
+            logger.warning("LLM API key missing.")
             return None
 
         try:
             response = requests.post(
-                f"{self.base_url}/chat/completions",
+                self.base_url,
                 headers={
                     "Authorization": f"Bearer {self.api_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": settings.LLM_MODEL,
+                    "model": self.model,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.3,
                 },
-                timeout=15,
+                timeout=self.timeout,
             )
 
-            response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"].strip()
+            if response.status_code != 200:
+                logger.error(f"Groq error: {response.text}")
+                return None
 
-        except requests.RequestException:
-            return None
+            data = response.json()
 
-    def _call_ollama(self, prompt: str) -> str | None:
-        """
-        Calls local Ollama server.
-        """
-
-        if not self.base_url:
-            return None
-
-        try:
-            response = requests.post(
-                f"{self.base_url}/api/generate",
-                json={
-                    "model": settings.LLM_MODEL,
-                    "prompt": prompt,
-                    "stream": False,
-                },
-                timeout=15,
+            content = (
+                data.get("choices", [{}])[0]
+                .get("message", {})
+                .get("content", "")
+                .strip()
             )
 
-            response.raise_for_status()
-            return response.json().get("response")
+            if not content:
+                return None
 
-        except requests.RequestException:
-            return None
+            if len(content) > 1500:  # avoid excessive hallucinated output
+                content = content[:1500]
+
+            return content
+
+        except Timeout:
+            logger.warning("LLM request timed out.")
+        except RequestException as e:
+            logger.error(f"LLM request failed: {e}")
+        except Exception:
+            logger.exception("Unexpected LLM failure.")
+
+        return None

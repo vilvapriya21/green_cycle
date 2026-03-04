@@ -7,6 +7,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pytest_cache
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -22,6 +23,7 @@ Thumbs.db
 *.log
 
 # Environment variables
+.env
 .env.example
 
 # Model artifacts (optional - depends on you)

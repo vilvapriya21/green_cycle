@@ -18,11 +18,9 @@ class Settings(BaseSettings):
     MODEL_DIR: Path = BASE_DIR / "models"
     MODEL_PATH: Path = MODEL_DIR / "classifier.joblib"
 
-    # LLM Configuration
-    LLM_PROVIDER: str = "openai"  # openai | groq | ollama
-    LLM_MODEL: str = "gpt-3.5-turbo"
+    # LLM Configuration (Groq only)
+    LLM_MODEL: str = "llama3-8b-8192"
     LLM_API_KEY: str | None = None
-    LLM_BASE_URL: str | None = None
 
     class Config:
         env_file = ".env"
