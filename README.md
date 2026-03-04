@@ -40,6 +40,20 @@ We implemented a **Logistic Regression classifier** using Scikit-learn.
 
 ---
 
+## Dataset
+
+The dataset contains 100+ synthetic and manually curated examples.
+
+Class distribution:
+- Recyclable ~ 40%
+- Compost ~ 30%
+- Hazardous ~ 30%
+
+Synthetic samples were generated to ensure vocabulary diversity 
+and class balance for training stability.
+
+---
+
 ## Preprocessing
 
 Text preprocessing is performed using **spaCy** and includes:
