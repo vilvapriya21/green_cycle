@@ -70,8 +70,16 @@ class LLMClient:
                 timeout=self.timeout,
             )
 
+            if response.status_code == 429:
+                logger.warning("LLM rate limited (429). Falling back to policy.")
+                return None
+
             if response.status_code != 200:
-                logger.error("LLM API error | status=%s | body=%s", response.status_code, response.text[:300])
+                logger.error(
+                    "LLM API error | status=%s | body=%s",
+                    response.status_code,
+                    response.text[:300],
+                )
                 return None
 
             data = response.json()

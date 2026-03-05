@@ -70,6 +70,13 @@ def classify_waste(
     Returns:
         WasteClassificationResponse: Predicted category and confidence score.
     """
+    # ✅ Requirement: return 400 for blank/whitespace-only input
+    if not request.text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Text cannot be empty.",
+        )
+
     raw = svc.classify(request.text)
 
     # svc.classify() returns {"label": "...", "confidence": ...}
@@ -114,6 +121,13 @@ def disposal_plan(
     Returns:
         WasteDisposalResponse: Category, confidence, and disposal instructions.
     """
+    # ✅ Requirement: return 400 for blank/whitespace-only input
+    if not request.text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Text cannot be empty.",
+        )
+
     result = svc.generate_disposal_plan(request.text)
 
     # Defensive programming: never return None (prevents FastAPI response validation errors)
