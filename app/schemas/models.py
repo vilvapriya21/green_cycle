@@ -5,29 +5,45 @@ class WasteRequest(BaseModel):
     """
     Request model for waste classification and disposal planning.
     """
+
     text: str = Field(
         ...,
         min_length=1,
-        description="Text description of waste item"
+        max_length=500,
+        description="Text description of the waste item",
+        example="used AA batteries"
     )
 
 
 class WasteClassificationResponse(BaseModel):
     """
     Response model for classification endpoint.
-    Returns only ML prediction.
     """
+
     text: str
     category: str
-    confidence: float
+    confidence: float = Field(
+        ...,
+        ge=0,
+        le=1,
+        description="Model confidence score"
+    )
 
 
 class WasteDisposalResponse(BaseModel):
     """
-    Response model for disposal endpoint.
-    Returns classification + AI-generated disposal plan.
+    Response model for disposal recommendation.
     """
+
     text: str
     category: str
-    confidence: float
-    disposal_plan: str
+    confidence: float = Field(
+        ...,
+        ge=0,
+        le=1
+    )
+
+    disposal_plan: str = Field(
+        ...,
+        description="AI-generated safe disposal instructions"
+    )

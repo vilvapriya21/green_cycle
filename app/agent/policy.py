@@ -1,14 +1,21 @@
+from app.config import settings
+
+
 class CityPolicyService:
     """
-    Simulated city policy rules.
+    Provides city waste disposal policies.
+    Policies are loaded from application configuration.
     """
-
-    POLICIES = {
-        "Recyclable": "Rinse the item and place it in the blue recycling bin.",
-        "Compost": "Place the item in the green compost bin.",
-        "Hazardous": "Seal the item in a leak-proof container and take it to the Hazardous Waste Facility."
-    }
 
     @classmethod
     def get_policy(cls, category: str) -> str:
-        return cls.POLICIES.get(category, "Follow general municipal waste guidelines.")
+        """
+        Retrieve disposal policy for a category.
+        """
+
+        policies = settings.CITY_POLICIES
+
+        return policies.get(
+            category,
+            "Follow general municipal waste guidelines."
+        )

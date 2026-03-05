@@ -1,13 +1,14 @@
 class PromptBuilder:
     """
-    Builds few-shot prompts for LLM disposal plan generation.
+    Builds prompts for LLM disposal plan generation.
     """
 
-    @staticmethod
-    def build_prompt(description: str, category: str, policy: str) -> str:
-        return f"""
-You are a waste disposal assistant. Given a waste description and its category,
-provide a disposal plan according to City Policy.
+    TEMPLATE = """
+You are a waste disposal assistant.
+
+Your task is to provide a safe and correct disposal plan based on the waste description and category.
+
+Follow the provided city policy when generating the plan.
 
 Examples:
 
@@ -21,10 +22,23 @@ Category: Hazardous
 City Policy: Batteries must be taken to a hazardous waste drop off.
 Disposal Plan: Take the batteries to the hazardous waste collection site.
 
-Now process:
+Now generate the disposal plan.
 
 Description: {description}
 Category: {category}
 City Policy: {policy}
+
 Disposal Plan:
 """
+
+    @classmethod
+    def build_prompt(cls, description: str, category: str, policy: str) -> str:
+        """
+        Builds a formatted prompt for the LLM.
+        """
+
+        return cls.TEMPLATE.format(
+            description=description,
+            category=category,
+            policy=policy
+        )
