@@ -3,77 +3,98 @@ preprocessor.py
 ---------------
 Text preprocessing module for the Green-Cycle waste classifier.
 
-Handles all NLP cleaning steps:
+Handles NLP cleaning steps:
     - Lowercasing
     - Non-alphabetical character removal
     - Lemmatisation via spaCy
     - Stopword removal
     - Short/meaningless token removal
 
-This same function is used at both training time and inference time
+The same function is used during both training and inference
 to guarantee consistent feature representation.
 """
 
+from __future__ import annotations
+
+import logging
 import re
 
 import spacy
 
-# Load spaCy model once at module level — avoids reloading on every call.
-# Run `python -m spacy download en_core_web_sm` before using this module.
-nlp = spacy.load("en_core_web_sm")
+logger = logging.getLogger(__name__)
+
+# ── Load spaCy model once (avoid repeated loading per request) ─────────────────
+
+try:
+    nlp = spacy.load("en_core_web_sm")
+    logger.info("spaCy model 'en_core_web_sm' loaded successfully.")
+except Exception:
+    logger.warning(
+        "spaCy model 'en_core_web_sm' not found. "
+        "Falling back to blank English pipeline. "
+        "Run: python -m spacy download en_core_web_sm"
+    )
+    nlp = spacy.blank("en")
 
 
 def clean_text(text: str) -> str:
     """
-    Clean and normalise raw text for ML feature extraction.
+    Clean and normalize raw text for ML feature extraction.
 
-    Pipeline:
-        1. Validate input.
-        2. Lowercase entire string.
-        3. Strip non-alphabetical characters (keeps spaces).
-        4. Run spaCy NLP pipeline for lemmatisation + stopword detection.
-        5. Filter out stopwords, punctuation, pronouns, and short tokens.
-        6. Return cleaned, space-joined token string.
+    Processing pipeline:
+        1. Validate input
+        2. Lowercase text
+        3. Remove non-alphabetical characters
+        4. Collapse whitespace
+        5. Apply spaCy lemmatization
+        6. Remove stopwords and short tokens
 
     Args:
-        text (str): Raw waste item description, e.g. "Empty Plastic Bottle!".
+        text (str): Raw waste description.
 
     Returns:
-        str: Cleaned lemmatised string, e.g. "empty plastic bottle".
+        str: Cleaned token string suitable for TF-IDF.
              Returns empty string if input is invalid.
-
-    Example:
-        >>> clean_text("Used AA Batteries!!!")
-        'use battery'
-        >>> clean_text("Empty plastic water bottle")
-        'empty plastic water bottle'
     """
 
-    # --- Guard: reject non-string or empty input ---
-    if not text or not isinstance(text, str):
+    # ── Guard: invalid input ────────────────────────────────────────────────
+    if not isinstance(text, str) or not text.strip():
         return ""
 
-    # Step 1: Normalise case
-    text = text.lower()
+    # Defensive: avoid extremely long inputs
+    if len(text) > 1000:
+        logger.debug("Input text truncated during preprocessing (len=%d)", len(text))
+        text = text[:1000]
 
-    # Step 2: Remove anything that is not a letter or space
-    text = re.sub(r"[^a-zA-Z\s]", "", text)
+    try:
+        # Step 1: lowercase
+        text = text.lower()
 
-    # Step 3: Collapse multiple spaces into one
-    text = re.sub(r"\s+", " ", text).strip()
+        # Step 2: remove non-letters
+        text = re.sub(r"[^a-zA-Z\s]", "", text)
 
-    # Step 4: Pass through spaCy for lemmatisation and linguistic analysis
-    doc = nlp(text)
+        # Step 3: collapse spaces
+        text = re.sub(r"\s+", " ", text).strip()
 
-    # Step 5: Filter tokens
-    tokens = [
-        token.lemma_                        # use base lemma form
-        for token in doc
-        if not token.is_stop               # drop stopwords (e.g. "the", "is")
-        and not token.is_punct             # drop punctuation tokens
-        and token.lemma_.strip() != ""     # drop whitespace-only tokens
-        and token.lemma_ != "-PRON-"       # drop unresolved pronoun lemmas
-        and len(token.lemma_) > 2          # drop very short noise tokens
-    ]
+        # Step 4: spaCy processing
+        doc = nlp(text)
 
-    return " ".join(tokens)
+        # Step 5: token filtering
+        tokens = []
+        for token in doc:
+            lemma = token.lemma_.strip()
+
+            if (
+                not token.is_stop
+                and not token.is_punct
+                and lemma
+                and lemma != "-PRON-"
+                and len(lemma) > 2
+            ):
+                tokens.append(lemma)
+
+        return " ".join(tokens)
+
+    except Exception as e:
+        logger.exception("Text preprocessing failed | text=%r | err=%s", text, e)
+        return ""

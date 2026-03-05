@@ -24,7 +24,6 @@ Thumbs.db
 
 # Environment variables
 .env
-.env.example
 
 # Model artifacts (optional - depends on you)
 *.pkl

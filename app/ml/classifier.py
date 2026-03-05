@@ -3,26 +3,29 @@ classifier.py
 -------------
 Inference module for the Green-Cycle waste classifier.
 
-Loads the trained sklearn pipeline from disk and exposes a single
-predict() method used by the FastAPI route handlers.
+Loads the trained sklearn pipeline from disk and exposes a predict() method
+used by the service/API layer.
 
 Design decisions:
     - Pipeline is loaded ONCE at instantiation — not on every request.
-    - Confidence threshold (0.55) filters low-certainty predictions.
     - Returns both label and confidence for transparent API responses.
-    - All edge cases (empty input, missing model) raise typed exceptions
-      so the API layer can return appropriate HTTP status codes.
+    - Thresholding is handled in the service layer (business rule),
+      so the classifier stays a pure inference component.
 """
 
-import joblib
+from __future__ import annotations
+
+import logging
 from pathlib import Path
+from typing import Any, Dict
 
+import joblib
 
-# Default model location — matches what train.py writes
-DEFAULT_MODEL_PATH = Path("models/pipeline.joblib")
+from app.config import settings
 
-# Predictions below this confidence are returned as "Uncertain"
-CONFIDENCE_THRESHOLD = 0.55
+logger = logging.getLogger(__name__)
+
+DEFAULT_MODEL_PATH: Path = settings.MODEL_PATH
 
 
 class WasteClassifier:
@@ -30,16 +33,11 @@ class WasteClassifier:
     Wrapper around the trained TF-IDF + Logistic Regression pipeline.
 
     Attributes:
-        model_path (Path)  : Path to the saved joblib pipeline file.
-        pipeline   (object): Loaded sklearn Pipeline instance.
-
-    Usage:
-        classifier = WasteClassifier()
-        result = classifier.predict("empty plastic bottle")
-        # → {"label": "Recyclable", "confidence": 0.91}
+        model_path (Path): Path to the saved joblib pipeline file.
+        pipeline (Any): Loaded sklearn Pipeline instance.
     """
 
-    def __init__(self, model_path: Path = DEFAULT_MODEL_PATH):
+    def __init__(self, model_path: Path = DEFAULT_MODEL_PATH) -> None:
         """
         Load the trained pipeline from disk.
 
@@ -47,95 +45,104 @@ class WasteClassifier:
             model_path (Path): Path to the joblib pipeline file.
 
         Raises:
-            FileNotFoundError: If the model file does not exist at the given path.
-                               Instructs user to run the training script first.
+            FileNotFoundError: If the model file does not exist.
+            RuntimeError: If the model exists but cannot be loaded.
         """
-        if not model_path.exists():
+        self.model_path = model_path
+
+        if not self.model_path.exists():
+            logger.error("Model file not found at: %s", self.model_path)
             raise FileNotFoundError(
-                f"Model not found at '{model_path}'. "
+                f"Model not found at '{self.model_path}'. "
                 "Run `python -m app.ml.train` to train and save the model first."
             )
 
-        self.pipeline = joblib.load(model_path)
+        try:
+            logger.info("Loading ML pipeline from: %s", self.model_path)
+            self.pipeline = joblib.load(self.model_path)
+            logger.info("ML pipeline loaded successfully.")
+        except Exception as e:
+            logger.exception("Failed to load ML pipeline from %s | err=%s", self.model_path, e)
+            raise RuntimeError(
+                f"Failed to load model pipeline from '{self.model_path}'. "
+                "The file may be corrupted or incompatible."
+            ) from e
 
-    def predict(self, text: str) -> dict:
+    def predict(self, text: str) -> Dict[str, Any]:
         """
-        Classify a waste item description into a waste category.
+        Predict the waste label and confidence for a given text.
 
-        The raw text is passed directly into the pipeline — TF-IDF's
-        preprocessor (clean_text) handles all NLP cleaning internally,
-        which guarantees the same preprocessing used during training.
-
-        Confidence thresholding:
-            If the highest class probability is below CONFIDENCE_THRESHOLD,
-            the label is returned as "Uncertain" to avoid overconfident
-            wrong predictions on out-of-vocabulary descriptions.
+        Note:
+            This method does NOT apply any confidence threshold.
+            Thresholding is handled by the service layer.
 
         Args:
-            text (str): Raw waste item description from the user.
-                        e.g. "Old AA batteries from a remote control"
+            text (str): Raw waste description.
 
         Returns:
-            dict: {
-                "label"      : str   — predicted class or "Uncertain",
-                "confidence" : float — probability of the predicted class (0–1)
-            }
+            dict: {"label": str, "confidence": float}
 
         Raises:
-            ValueError: If the input text is empty or whitespace-only.
-
-        Example:
-            >>> clf = WasteClassifier()
-            >>> clf.predict("banana peel")
-            {"label": "Compost", "confidence": 0.87}
-            >>> clf.predict("broken fluorescent tube")
-            {"label": "Hazardous", "confidence": 0.93}
+            ValueError: If input text is empty or invalid.
+            RuntimeError: If inference fails unexpectedly.
         """
-        # Guard: reject empty or whitespace-only input
-        if not text or not isinstance(text, str) or not text.strip():
+        if not isinstance(text, str) or not text.strip():
             raise ValueError(
-                "Input text cannot be empty. "
-                "Please provide a description of the waste item."
+                "Input text cannot be empty. Please provide a description of the waste item."
             )
 
-        # Get predicted label
-        predicted_label = self.pipeline.predict([text])[0]
+        try:
+            probabilities = self.pipeline.predict_proba([text])[0]
+            classes = self.pipeline.classes_
 
-        # Get class probabilities for confidence scoring
-        probabilities = self.pipeline.predict_proba([text])[0]
-        confidence = float(max(probabilities))
+            best_idx = int(probabilities.argmax())
+            label = str(classes[best_idx])
+            confidence = float(probabilities[best_idx])
 
-        # Apply confidence threshold — flag low-certainty predictions
-        if confidence < CONFIDENCE_THRESHOLD:
-            predicted_label = "Uncertain"
+            logger.debug(
+                "Prediction completed | label=%s | confidence=%.4f | text_len=%d",
+                label,
+                confidence,
+                len(text),
+            )
 
-        return {
-            "label":      predicted_label,
-            "confidence": round(confidence, 4)
-        }
+            return {"label": label, "confidence": confidence}
 
-    def get_all_probabilities(self, text: str) -> dict:
+        except Exception as e:
+            logger.exception("Model inference failed | text=%r | err=%s", text, e)
+            raise RuntimeError("Model inference failed.") from e
+
+    def get_all_probabilities(self, text: str) -> Dict[str, float]:
         """
-        Return probabilities for ALL classes — useful for debugging
-        and for building confidence breakdowns in API responses.
+        Return probabilities for all classes (debug utility).
 
         Args:
-            text (str): Raw waste item description.
+            text (str): Raw waste description.
 
         Returns:
-            dict: {class_name: probability} for each known class.
+            dict: {class_name: probability}
 
-        Example:
-            >>> clf.get_all_probabilities("empty plastic bottle")
-            {"Compost": 0.04, "Hazardous": 0.05, "Recyclable": 0.91}
+        Raises:
+            ValueError: If input text is empty.
+            RuntimeError: If probability computation fails.
         """
-        if not text or not text.strip():
+        if not isinstance(text, str) or not text.strip():
             raise ValueError("Input text cannot be empty.")
 
-        classes       = self.pipeline.classes_
-        probabilities = self.pipeline.predict_proba([text])[0]
+        try:
+            probabilities = self.pipeline.predict_proba([text])[0]
+            classes = self.pipeline.classes_
 
-        return {
-            cls: round(float(prob), 4)
-            for cls, prob in zip(classes, probabilities)
-        }
+            probs = {str(cls): float(prob) for cls, prob in zip(classes, probabilities)}
+
+            logger.debug(
+                "Probability breakdown | text_len=%d | probs=%s",
+                len(text),
+                {k: round(v, 4) for k, v in probs.items()},
+            )
+
+            return probs
+
+        except Exception as e:
+            logger.exception("Failed to compute probabilities | text=%r | err=%s", text, e)
+            raise RuntimeError("Probability computation failed.") from e

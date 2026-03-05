@@ -1,4 +1,15 @@
+"""
+llm_client.py
+-------------
+Simple client for calling an OpenAI-compatible chat completion endpoint.
+
+Default usage:
+- Groq API (OpenAI-compatible) via LLM_BASE_URL
+"""
+
 import logging
+from typing import Optional
+
 import requests
 from requests.exceptions import Timeout, RequestException
 
@@ -9,30 +20,40 @@ logger = logging.getLogger(__name__)
 
 class LLMClient:
     """
-    Handles communication with the Groq LLM API.
+    Handles communication with the configured LLM API.
+
+    Returns None on failure so the service layer can fall back to policy text.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_key = settings.LLM_API_KEY
         self.model = settings.LLM_MODEL
         self.base_url = settings.LLM_BASE_URL
         self.timeout = settings.LLM_TIMEOUT
         self.temperature = settings.LLM_TEMPERATURE
 
-    def generate(self, prompt: str) -> str | None:
+    def generate(self, prompt: str, max_chars: int = 1500) -> Optional[str]:
         """
-        Send prompt to LLM and return generated text.
+        Send a prompt to the LLM and return the generated text.
+
+        Args:
+            prompt (str): prompt text
+            max_chars (int): cap on returned text length
+
+        Returns:
+            Optional[str]: generated text or None if failed
         """
+        if not isinstance(prompt, str) or not prompt.strip():
+            logger.warning("LLM called with empty prompt.")
+            return None
 
         if not self.api_key:
-            logger.warning("LLM API key is missing.")
+            logger.warning("LLM_API_KEY is missing. Skipping LLM call.")
             return None
 
         payload = {
             "model": self.model,
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
+            "messages": [{"role": "user", "content": prompt}],
             "temperature": self.temperature,
         }
 
@@ -42,7 +63,6 @@ class LLMClient:
         }
 
         try:
-
             response = requests.post(
                 self.base_url,
                 headers=headers,
@@ -51,10 +71,7 @@ class LLMClient:
             )
 
             if response.status_code != 200:
-                logger.error(
-                    "Groq API returned error: %s",
-                    response.text
-                )
+                logger.error("LLM API error | status=%s | body=%s", response.status_code, response.text[:300])
                 return None
 
             data = response.json()
@@ -63,24 +80,25 @@ class LLMClient:
                 data.get("choices", [{}])[0]
                 .get("message", {})
                 .get("content", "")
-                .strip()
             )
 
-            if not content:
+            if not isinstance(content, str) or not content.strip():
                 logger.warning("LLM returned empty response.")
                 return None
 
-            # Limit hallucinated long outputs
-            if len(content) > 1500:
-                content = content[:1500]
+            content = content.strip()
+
+            if len(content) > max_chars:
+                content = content[:max_chars]
 
             return content
 
         except Timeout:
             logger.warning("LLM request timed out.")
+            return None
         except RequestException as e:
             logger.error("LLM request failed: %s", e)
+            return None
         except Exception:
             logger.exception("Unexpected LLM error.")
-
-        return None
+            return None
