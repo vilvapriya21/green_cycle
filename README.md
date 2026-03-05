@@ -1,360 +1,498 @@
-# 🌱 Green-Cycle – Autonomous Waste Auditor
+# Green-Cycle: Autonomous Waste Auditor
 
-An intelligent smart-city waste auditing system that classifies waste descriptions and generates city-compliant disposal plans using Machine Learning and an AI Agent.
+## Project Overview
 
----
+**Green-Cycle** is an intelligent waste auditing system that classifies waste descriptions and generates disposal instructions according to simulated city waste policies.
 
-# 📌 Project Overview
+The system demonstrates an **end-to-end AI engineering pipeline** combining:
 
-Green-Cycle simulates a smart city application where citizens submit waste descriptions via text.
+* **Machine Learning** for waste classification
+* **AI Agent (LLM-based)** for disposal planning
+* **FastAPI REST API** for serving predictions
+* **Docker containerization** for reproducible deployment
 
-The system:
+The goal is to simulate a **smart city assistant** that allows citizens to report waste items through text and receive guidance on how to dispose of them properly.
 
-1. Classifies the waste into one of:
-
-   * Hazardous
-   * Recyclable
-   * Compost
-
-2. Uses an AI Agent with few-shot prompting to generate a disposal plan based on simulated city policy.
-
-3. Exposes the functionality through a FastAPI REST API.
-
-4. Is fully containerised using Docker.
+This project was implemented following the requirements of the **“Green-Cycle Autonomous Waste Auditor” assessment**, which requires an ML model, an LLM agent, a REST API service, and Docker deployment. 
 
 ---
 
-# 🧠 1. Machine Learning Core
+# System Workflow
 
-## Model Choice
-
-We implemented a **Logistic Regression classifier** using Scikit-learn.
-
-### Why Logistic Regression?
-
-* Suitable for text classification problems
-* Works well with sparse TF-IDF vectors
-* Provides probability estimates
-* Less sensitive to noise compared to KNN
-* Computationally efficient
+1. User sends a **text description of a waste item**
+2. Text is **cleaned and normalized using NLP preprocessing**
+3. The **ML classifier predicts the waste category**
+4. The **AI agent retrieves the relevant city policy**
+5. The **LLM generates a disposal plan**
+6. The system returns **classification and disposal instructions via API**
 
 ---
 
-## Dataset
+# Waste Categories
 
-## Dataset
+The ML classifier predicts one of the following classes:
 
-The dataset contains 301 synthetic and manually curated examples.
-
-Class distribution:
-- Recyclable: 101
-- Compost: 100
-- Hazardous: 100
-
-To improve real-world robustness and reduce prediction uncertainty,
-the dataset was expanded with diverse sentence-level variations,
-context phrases, and modifier combinations.
-
-This increased vocabulary diversity and improved generalisation
-across natural-language inputs.
+| Category   | Description                               |
+| ---------- | ----------------------------------------- |
+| Recyclable | Materials that can be reused or processed |
+| Compost    | Organic waste that can decompose          |
+| Hazardous  | Materials requiring special handling      |
 
 ---
 
-## Preprocessing
-
-Text preprocessing is performed using **spaCy** and includes:
-
-* Lowercasing
-* Lemmatization (NOT stemming)
-* Stop-word removal
-* Punctuation removal
-
-This ensures semantic consistency (e.g., “batteries” → “battery”).
-
----
-
-## Feature Engineering
-
-* TF-IDF Vectorizer used to convert text into numerical features.
-
----
-
-## Training & Evaluation
-
-- Dataset size: 301 samples
-- Balanced across 3 classes
-- Train/Test Split: 80/20
-- Cross-validation (5-fold) used to validate stability
-
-### Results
-
-- Training Accuracy: 94.17%
-- Test Accuracy: 83.61%
-- Cross-Validation Mean Accuracy: 85.37%
-- Cross-Validation Std: 0.0554
-
-## Overfitting Analysis
-
-Training Accuracy: 94.17%  
-Test Accuracy: 83.61%  
-Generalisation Gap: ~10.5%
-
-The gap between training and test accuracy is moderate and acceptable
-for a TF-IDF based text classification model.
-
-Compared to the earlier smaller dataset (~100 samples), the expanded dataset:
-
-- Reduced overfitting
-- Increased cross-validation stability
-- Improved macro F1 score
-- Reduced prediction uncertainty on sentence-style inputs
-
-The model demonstrates strong generalisation with consistent
-cross-validation performance (0.78 – 0.93 across folds).
-
-### Classification Report (Test Set)
-
-| Class       | Precision | Recall | F1-score |
-|------------|-----------|--------|----------|
-| Compost     | 0.72      | 0.90   | 0.80     |
-| Hazardous   | 0.93      | 0.70   | 0.80     |
-| Recyclable  | 0.90      | 0.90   | 0.90     |
-
-Overall Accuracy: 83.61%  
-Macro Avg F1: 0.83
-
----
-
-# 🤖 2. AI Agent
-
-## Architecture
-
-The AI Agent performs:
-
-1. Logic-based decision:
-
-   * If Hazardous → check special handling rules
-   * If Recyclable → check recycling bin policy
-   * If Compost → check compost guidelines
-
-2. Fetch simulated City Policy
-
-3. Construct a Few-Shot Prompt
-
-4. Call External LLM API (OpenAI / HuggingFace)
-
-5. Return final disposal plan
-
----
-
-## Few-Shot Prompt Design
-
-The agent uses structured examples:
-
-You are a waste disposal assistant...
-
-Examples:
-Description: empty plastic bottle
-Category: Recyclable
-City Policy: Plastic bottles must be rinsed and placed in the blue bin.
-Disposal Plan: Rinse and place in the blue bin.
-
-...
-
-Then processes:
-Description: {description}
-Category: {category}
-City Policy: {policy}
-Disposal Plan:
-
----
-
-## API Security
-
-* API keys are stored in environment variables:
-
-  * OPENAI_API_KEY
-  * HF_TOKEN
-* No hardcoded secrets
-* Graceful error handling implemented:
-
-  * Network failure
-  * Rate limits
-  * Invalid response
-
-If API fails → fallback rule-based disposal plan is returned.
-
----
-
-# 🌐 3. API Design
-
-Built using FastAPI.
-
-## Endpoints
-
-### POST /classify
-
-Request:
-{
-"text": "used batteries"
-}
-
-Response:
-{
-"category": "Hazardous",
-"confidence": 0.84
-}
-
----
-
-### POST /disposal
-
-Request:
-{
-"text": "used batteries"
-}
-
-Response:
-{
-"category": "Hazardous",
-"confidence": 0.84,
-"disposal_plan": "Seal in leak-proof container and take to hazardous waste facility."
-}
-
----
-
-## Validation
-
-* Pydantic models used
-* Proper HTTP status codes:
-
-  * 200 – Success
-  * 400 – Invalid input
-  * 500 – Server error
-
----
-
-# 🐳 4. Docker Deployment
-
-## Build Image
-
-docker build -t green-cycle .
-
-## Run Container
-
-docker run -p 8000:8000 -e OPENAI_API_KEY=your_key green-cycle
-
-## Optimisations
-
-* Base image: python:3.10-slim
-* Minimal layer size
-* Cleared pip cache
-* Environment variables passed at runtime
-
----
-
-# 📂 Project Structure
+# System Architecture
 
 ```
-# 📂 Project Structure
+User Request
+     |
+     v
+FastAPI Endpoint
+     |
+     v
+ML Classification Pipeline
+(Text preprocessing + TF-IDF + Logistic Regression)
+     |
+     v
+Waste Category
+     |
+     v
+AI Agent
+(Few-shot prompting + policy rules)
+     |
+     v
+Disposal Plan
+     |
+     v
+JSON API Response
+```
 
+---
+
+# Project Structure
+
+```
 green_cycle/
 │
 ├── app/
-│   ├── main.py                  # FastAPI entry point
+│   ├── agent/               # LLM interaction and prompting
+│   │   ├── llm_client.py
+│   │   ├── policy.py
+│   │   └── prompt_builder.py
 │   │
-│   ├── api/                     # HTTP layer only
+│   ├── api/                 # FastAPI routes
 │   │   └── routes.py
 │   │
-│   ├── core/
-│   │   └── logging_config.py
+│   ├── ml/                  # Machine learning pipeline
+│   │   ├── classifier.py
+│   │   ├── preprocessor.py
+│   │   └── train.py
 │   │
-│   ├── services/                # Orchestration layer
+│   ├── schemas/             # Pydantic request/response models
+│   │
+│   ├── services/            # Business logic layer
 │   │   └── waste_audit_service.py
 │   │
-│   ├── ml/
-│   │   ├── preprocessor.py      # spaCy cleaning
-│   │   ├── classifier.py        # Model loading & prediction
-│   │   └── train.py             # Training & evaluation
-│   │
-│   ├── agent/
-│   │   ├── policy.py
-│   │   ├── prompt_builder.py
-│   │   └── llm_client.py
-│   │
-│   ├── schemas/
-│   │   └── models.py            # Pydantic models
-│   │
-│   └── config.py                # Centralised settings
-│
-├── models/
-│   ├── classifier.joblib
-│   └── vectorizer.joblib
+│   ├── config.py
+│   └── main.py              # FastAPI entrypoint
 │
 ├── data/
 │   ├── waste_data.csv
 │   └── generate_dataset.py
 │
+├── notebooks/
+│   ├── exploration.ipynb
+│   └── green_cycle_ml.ipynb
+│
 ├── tests/
-│   ├── test_classifier.py
-│   ├── test_agent.py
-│   └── test_routes.py
 │
 ├── Dockerfile
 ├── requirements.txt
-├── requirements-dev.txt
 └── README.md
 ```
 
 ---
 
-# ⚙️ Local Setup
+# Machine Learning Component
 
-1. Create virtual environment
-2. Install dependencies:
-   pip install -r requirements.txt
-3. Run:
-   uvicorn app.main:app --reload
+The ML component classifies waste descriptions such as:
 
----
-# 🔐 Environment Variables
+* "banana peel"
+* "empty plastic bottle"
+* "used batteries"
+* "paint thinner can"
 
-Create a `.env` file (not committed to Git):
-
-OPENAI_API_KEY=your_openai_key
-HF_TOKEN=your_huggingface_token
-
-These keys are injected at runtime and are never hardcoded.
+The output is one of the three waste categories.
 
 ---
 
-# 🧪 Example CURL
+# Text Preprocessing
 
-curl -X POST "http://127.0.0.1:8000/disposal" 
--H "Content-Type: application/json" 
--d '{"text": "old paint can"}'
+The preprocessing pipeline performs the following NLP steps:
 
----
+* Lowercasing
+* Lemmatization
+* Stopword removal
+* Punctuation cleaning
 
-# 🧹 Code Hygiene
+Libraries used:
 
-* PEP8 naming conventions
-* Modular structure
-* Docstrings for functions/classes
-* Clear separation of ML, Agent, API, Config
+* **spaCy**
+* **NLTK**
 
----
-
-# 📊 Design Choices Summary
-
-* Logistic Regression selected for stability
-* TF-IDF for robust text vectorisation
-* spaCy for linguistic-level preprocessing
-* Few-shot prompting to demonstrate agent reasoning
-* Dockerised for portability
+These steps normalize the text before feature extraction.
 
 ---
 
-# 👩‍💻 Author
+# Feature Engineering
 
-Vilva Priya K
+Text is converted into numerical features using **TF-IDF Vectorization**.
+
+TF-IDF helps represent the importance of words within waste descriptions relative to the entire dataset.
+
+---
+
+# Model Selection
+
+The classifier uses **Logistic Regression (scikit-learn)**.
+
+Reasons for selecting Logistic Regression:
+
+* Effective for text classification
+* Works well with TF-IDF features
+* Efficient and lightweight
+* Suitable for real-time inference in APIs
+
+---
+
+# Training Configuration
+
+| Parameter        | Value               |
+| ---------------- | ------------------- |
+| Dataset Size     | 301 samples         |
+| Classes          | 3                   |
+| Train/Test Split | 80/20               |
+| Feature Type     | TF-IDF              |
+| Model            | Logistic Regression |
+
+---
+
+# Model Evaluation
+
+Evaluation results are shown in **green_cycle_ml.ipynb**.
+
+| Metric                | Result |
+| --------------------- | ------ |
+| Training Accuracy     | ~0.95  |
+| Test Accuracy         | ~0.92  |
+| Cross-Validation Mean | ~0.91  |
+
+Cross-validation results are consistent with test performance, indicating that the model generalizes well to unseen data.
+
+---
+
+# AI Agent
+
+The AI agent generates a **human-readable disposal plan** using:
+
+* Waste description
+* Predicted waste category
+* City waste policy rules
+
+---
+
+# City Policy Simulation
+
+City policies are implemented using a simple rule dictionary.
+
+| Category   | Policy                                           |
+| ---------- | ------------------------------------------------ |
+| Recyclable | Rinse items and place in recycling bins          |
+| Compost    | Dispose in organic waste containers              |
+| Hazardous  | Deliver to hazardous waste collection facilities |
+
+---
+
+# Agent Decision Logic
+
+Before generating the prompt, the agent determines the appropriate policy:
+
+```
+if category == "Hazardous":
+    apply hazardous waste handling rules
+elif category == "Recyclable":
+    apply recycling policy
+else:
+    apply composting policy
+```
+
+This step demonstrates **logic-based decision making before invoking the LLM**.
+
+---
+
+# Few-Shot Prompting
+
+Example prompt used for the LLM:
+
+```
+You are a waste disposal assistant.
+
+Example 1:
+Description: empty plastic bottle
+Category: Recyclable
+City Policy: Plastic bottles must be rinsed and placed in recycling bins.
+Disposal Plan: Rinse the bottle and place it in the recycling bin.
+
+Example 2:
+Description: used batteries
+Category: Hazardous
+City Policy: Batteries must be taken to a hazardous waste facility.
+Disposal Plan: Take the batteries to the hazardous waste collection center.
+
+Now process:
+
+Description: {description}
+Category: {category}
+City Policy: {policy}
+Disposal Plan:
+```
+
+---
+
+# LLM Integration
+
+The system uses an **OpenAI-compatible chat completion API**.
+
+By default, the project is configured to use **Groq LLM inference**.
+
+Environment variables control the LLM configuration.
+
+---
+
+# Environment Variables
+
+Create a `.env` file in the project root.
+
+```
+# LLM Provider Configuration
+
+LLM_API_KEY=your_api_key
+
+LLM_MODEL=llama-3.1-8b-instant
+
+LLM_BASE_URL=https://api.groq.com/openai/v1/chat/completions
+
+LLM_TIMEOUT=15
+
+LLM_TEMPERATURE=0.3
+```
+
+Because the system uses an **OpenAI-compatible API interface**, the same configuration can be adapted to other providers by modifying the model name and base URL.
+
+---
+
+# REST API
+
+Two REST endpoints are provided using **FastAPI**.
+
+---
+
+## POST /classify
+
+Predicts the waste category.
+
+Request
+
+```
+{
+"text": "banana peel"
+}
+```
+
+Response
+
+```
+{
+"category": "Compost"
+}
+```
+
+---
+
+## POST /disposal
+
+Returns the waste category and disposal plan.
+
+Request
+
+```
+{
+"text": "used batteries"
+}
+```
+
+Response
+
+```
+{
+"category": "Hazardous",
+"plan": "Take the batteries to the hazardous waste collection facility."
+}
+```
+
+---
+
+# Running the Project Locally
+
+## Install Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+---
+
+## Configure Environment Variables
+
+Create a `.env` file using the environment variables described earlier.
+
+---
+
+## Run FastAPI Server
+
+```
+uvicorn app.main:app --reload
+```
+
+Server runs at:
+
+```
+http://localhost:8000
+```
+
+Interactive API documentation:
+
+```
+http://localhost:8000/docs
+```
+
+---
+
+# Example API Requests
+
+## Classify Waste
+
+```
+curl -X POST http://localhost:8000/classify \
+-H "Content-Type: application/json" \
+-d '{"text":"glass bottle"}'
+```
+
+---
+
+## Generate Disposal Plan
+
+```
+curl -X POST http://localhost:8000/disposal \
+-H "Content-Type: application/json" \
+-d '{"text":"paint thinner can"}'
+```
+
+---
+
+# Docker Deployment
+
+The application is containerized using Docker for consistent deployment.
+
+---
+
+## Dockerfile Overview
+
+Key features:
+
+* Uses **python:3.10-slim** base image
+* Installs dependencies from **requirements.txt**
+* Copies application code into container
+* Runs FastAPI server using **uvicorn**
+
+Example Dockerfile structure:
+
+```
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
+```
+
+---
+
+## Build Docker Image
+
+```
+docker build -t green-cycle .
+```
+
+---
+
+## Run Container
+
+```
+docker run -p 8000:8000 \
+-e LLM_API_KEY=your_api_key \
+green-cycle
+```
+
+API will be accessible at:
+
+```
+http://localhost:8000
+```
+
+---
+
+# Testing
+
+Run unit tests using:
+
+```
+pytest tests/
+```
+
+Tests cover:
+
+* ML classifier functionality
+* AI agent behavior
+* API endpoints
+* Service layer logic
+
+---
+
+# Security
+
+API keys are **never stored in the repository**.
+
+Secrets are injected using **environment variables** during runtime.
+
+---
+
+# Future Improvements
+
+Possible enhancements include:
+
+* Image-based waste classification
+* Expanded waste categories
+* Retrieval-Augmented Generation for policy retrieval
+* Integration with real municipal waste APIs
+* Cloud deployment using Kubernetes
+
+---
+
+# Author
+
+K Vilva Priya
+AI/ML Engineering Project
