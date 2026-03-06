@@ -21,6 +21,7 @@ from typing import Any, Dict, Optional
 from app.agent.llm_client import LLMClient
 from app.agent.policy import CityPolicyService
 from app.agent.prompt_builder import PromptBuilder
+from app.config import settings
 from app.ml.classifier import WasteClassifier
 
 logger = logging.getLogger(__name__)
@@ -39,14 +40,10 @@ class WasteAuditService:
     """
 
     # Confidence threshold below which the system responds with "Uncertain"
-    MIN_CONFIDENCE: float = 0.55
+    MIN_CONFIDENCE: float = settings.MIN_CLASSIFICATION_CONFIDENCE
 
     # Simple safety filter: if LLM suggests unsafe disposal, revert to policy fallback
-    FORBIDDEN_PATTERNS = [
-        "burn the battery",
-        "throw in river",
-        "mix with food waste",
-    ]
+    FORBIDDEN_PATTERNS = settings.LLM_FORBIDDEN_PATTERNS
 
     def __init__(self) -> None:
         """

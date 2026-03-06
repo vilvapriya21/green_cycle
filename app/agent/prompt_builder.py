@@ -17,6 +17,11 @@ Category: Recyclable
 City Policy: Plastic bottles must be rinsed and placed in the blue bin.
 Disposal Plan: Rinse the bottle and put it in the blue recycling bin.
 
+Description: banana peel
+Category: Compost
+City Policy: Organic waste should go to compost bins.
+Disposal Plan: Place the peel in the compost bin.
+
 Description: used batteries
 Category: Hazardous
 City Policy: Batteries must be taken to a hazardous waste drop off.

@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     LLM_TIMEOUT: int = 20
     LLM_TEMPERATURE: float = 0.2
 
+    # Classification safety threshold
+    MIN_CLASSIFICATION_CONFIDENCE: float = 0.55
+
+    # LLM Safety guardrails
+    LLM_FORBIDDEN_PATTERNS: list[str] = [
+        "burn the battery",
+        "throw in river",
+        "mix with food waste",
+    ]
+
     # City Policies (simulated)
     CITY_POLICIES: dict = {
         "Recyclable": "Rinse the item and place it in the blue recycling bin.",
