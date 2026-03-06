@@ -1,4 +1,5 @@
 pytest==9.0.2
+pytest-cov==6.2.1
 httpx==0.27.0
 ipykernel==6.29.5
 notebook==7.2.1

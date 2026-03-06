@@ -1,6 +1,11 @@
+"""
+Prompt builder for disposal-plan generation.
+"""
+
+
 class PromptBuilder:
     """
-    Builds prompts for LLM disposal plan generation.
+    Build few-shot prompts for disposal-plan generation.
     """
 
     TEMPLATE = """
@@ -34,16 +39,15 @@ Category: {category}
 City Policy: {policy}
 
 Disposal Plan:
-"""
+""".strip()
 
     @classmethod
     def build_prompt(cls, description: str, category: str, policy: str) -> str:
         """
-        Builds a formatted prompt for the LLM.
+        Return a formatted few-shot prompt.
         """
-
         return cls.TEMPLATE.format(
             description=description,
             category=category,
-            policy=policy
+            policy=policy,
         )

@@ -45,14 +45,20 @@ class WasteAuditService:
     # Simple safety filter: if LLM suggests unsafe disposal, revert to policy fallback
     FORBIDDEN_PATTERNS = settings.LLM_FORBIDDEN_PATTERNS
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        classifier: WasteClassifier | None = None,
+        llm_client: LLMClient | None = None,
+    ) -> None:
         """
-        Initialize the service by creating the classifier and LLM client.
+        Initialize the service with optional injected dependencies.
 
-        Note: WasteClassifier loads the trained pipeline from disk.
+        Dependency injection keeps production defaults simple while making the
+        service easy to unit test without loading the real model or calling
+        external APIs.
         """
-        self.classifier = WasteClassifier()
-        self.llm_client = LLMClient()
+        self.classifier = classifier or WasteClassifier()
+        self.llm_client = llm_client or LLMClient()
 
     def _sanitize_input(self, text: str) -> str:
         """
@@ -162,7 +168,7 @@ class WasteAuditService:
             label = pred.get("label", "Uncertain")
             confidence = float(pred.get("confidence", 0.0))
 
-            # ✅ Apply confidence gating here (single source of truth)
+            # Apply confidence gating here (single source of truth)
             if confidence < self.MIN_CONFIDENCE:
                 logger.info(
                     "Confidence below threshold | raw_label=%s | confidence=%.3f | threshold=%.2f",
