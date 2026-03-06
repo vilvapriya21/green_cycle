@@ -11,7 +11,7 @@ class WasteRequest(BaseModel):
         min_length=1,
         max_length=500,
         description="Text description of the waste item",
-        example="used AA batteries"
+        json_schema_extra={"example": "banana peel"}
     )
 
 

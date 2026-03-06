@@ -7,7 +7,12 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.pytest_cache
+
+#tests related
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/

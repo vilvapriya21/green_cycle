@@ -1,5 +1,5 @@
 from app.services.waste_audit_service import WasteAuditService
-
+from app.main import app
 
 class FakeClassifier:
     def __init__(self, label="Recyclable", confidence=0.93, should_raise=False):
@@ -85,6 +85,26 @@ def test_generate_disposal_plan_rejects_unsafe_llm_response():
 
     assert result["category"] == "Hazardous"
     assert "leak-proof" in result["disposal_plan"].lower() or "hazardous waste facility" in result["disposal_plan"].lower()
+
+
+def test_generate_disposal_plan_returns_uncertain_when_classifier_fails():
+    class BrokenClassifier:
+        def predict(self, text: str):
+            raise RuntimeError("classifier exploded")
+
+    class FakeLLMClient:
+        def generate(self, prompt: str):
+            return "some response"
+
+    service = WasteAuditService(
+        classifier=BrokenClassifier(),
+        llm_client=FakeLLMClient(),
+    )
+
+    result = service.generate_disposal_plan("old paint can")
+
+    assert result["category"] == "Uncertain"
+    assert result["confidence"] == 0.0
 
 
 def test_classify_returns_uncertain_when_classifier_fails():

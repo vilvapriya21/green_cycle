@@ -1,15 +1,16 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from app.ml.classifier import WasteClassifier
 
 
 class FakePipeline:
-    classes_ = ["Compost", "Hazardous", "Recyclable"]
+    classes_ = np.array(["Compost", "Hazardous", "Recyclable"])
 
     def predict_proba(self, texts):
-        return [[0.70, 0.10, 0.20]]
+        return np.array([[0.70, 0.10, 0.20]])
 
 
 def test_classifier_prediction(monkeypatch, tmp_path):
