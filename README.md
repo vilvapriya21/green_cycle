@@ -298,14 +298,28 @@ The Dockerfile uses a **multi-stage build**:
 docker build -t green-cycle .
 ```
 
+### Image Details
+
+- **Base image:** `python:3.10-slim`
+- **Multi-stage build:** yes
+- **Final image size:** ~963 MB
+
 ### Run the Container
 
+Option 1 — Using environment variables
+
 ```bash
-docker run -p 8000:8000 \
+docker run --name green-cycle-api -p 8000:8000 \
   -e LLM_API_KEY=your_groq_api_key_here \
   -e LLM_MODEL=llama-3.1-8b-instant \
   -e LLM_BASE_URL=https://api.groq.com/openai/v1/chat/completions \
   green-cycle
+```
+
+Option 2 — Using .env file (recommended)
+
+```bash
+docker run --env-file .env -p 8000:8000 green-cycle
 ```
 
 API available at `http://localhost:8000`
