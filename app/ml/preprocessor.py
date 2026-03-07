@@ -23,7 +23,7 @@ import spacy
 
 logger = logging.getLogger(__name__)
 
-# ── Load spaCy model once (avoid repeated loading per request) ─────────────────
+#Load spaCy model once (avoid repeated loading per request)
 
 try:
     nlp = spacy.load("en_core_web_sm")

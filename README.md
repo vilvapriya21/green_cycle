@@ -180,7 +180,7 @@ green_cycle/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/green-cycle.git
+git clone https://github.com/vilvapriya21/green_cycle.git
 cd green-cycle
 ```
 
