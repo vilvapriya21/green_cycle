@@ -30,6 +30,6 @@ Thumbs.db
 # Environment variables
 .env
 
-# Model artifacts (optional - depends on you)
+# Model artifacts
 *.pkl
 models/
